@@ -4,8 +4,8 @@ Send webmentions in the background instead of while you wait for a post to save.
 
 ## The problem
 
-When you publish a blog post (a `Text` entry), Idno sends webmentions for each link synchronously before the page 
-responds. Each linked page has to be fetched and checked for a webmention endpoint, so a post with many links, or with a 
+When you publish a blog post Idno sends webmentions for each link synchronously before the page responds.
+Each linked page has to be fetched and checked for a webmention endpoint, so a post with many links, or with a 
 few slow or dead links, can take minutes to save.
 On one blog the symptom was a `Maximum execution time of 30 seconds exceeded` fatal error on save.
 
