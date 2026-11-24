@@ -60,29 +60,3 @@ When the worker's call to `/service/queue/dispatch/<id>` doesn't return Idno's e
 `service-event-queue` prints `dispatched but may not have completed`, with no hint about which address it
 called. The address only appears in the debug log. Printing it in that message would have saved a lot of time.
 
-## Draft issue for idno/idno
-
-**Title:** Send webmentions in the background for blog posts (Text), like Status already does
-
-**Body:**
-
-> When I publish a blog post, Idno sends webmentions to every link in it before the page responds, one after
-> another. On posts with many links, or a few slow or dead ones, saving takes minutes, and I've hit
-> `Maximum execution time of 30 seconds exceeded` (the stack trace ends in `Scanner.php`).
->
-> `IdnoPlugins/Status` already avoids this by calling
-> `queue()->enqueue('default', 'webmention/sendall', [...])`, and the docs describe the asynchronous queue
-> (`docs/install/advanced.md`). `IdnoPlugins/Text/Entry.php` still calls `Webmention::pingMentions()` directly.
-> With the default `SynchronousQueue`, `enqueue()` runs the event immediately, so the change doesn't alter
-> behavior for sites that haven't turned on the asynchronous queue.
->
-> I've put a patch for `Text/Entry.php`, a cron wrapper for shared hosting, and notes on the other post types
-> here: <link to your repo>. I've run it on my own site with the asynchronous queue and a cron job running
-> `service-event-queue --once`.
->
-> I also found that the worker can't reach a site installed in a subdirectory (`https://example.com/blog/`),
-> because `idno.php` never loads `start.php`, so `IDNO_SUBDIRECTORY` isn't defined. The worker then calls
-> `https://example.com/service/queue/dispatch/...`. The repo has a workaround, and I can open a separate
-> issue for it if you'd prefer.
->
-> Happy to turn any of this into pull requests.
