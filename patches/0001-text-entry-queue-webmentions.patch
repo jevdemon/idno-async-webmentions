@@ -1,0 +1,19 @@
+diff --git a/IdnoPlugins/Text/Entry.php b/IdnoPlugins/Text/Entry.php
+index f870946..c25120e 100644
+--- a/IdnoPlugins/Text/Entry.php
++++ b/IdnoPlugins/Text/Entry.php
+@@ -152,7 +152,13 @@ namespace IdnoPlugins\Text {
+                         $autosave->clearContext('entry');
+ 
+                         if ($this->getAccess() == 'PUBLIC') {
+-                            \Idno\Core\Webmention::pingMentions($this->getURL(), \Idno\Core\Idno::site()->template()->parseURLs($this->getTitle() . ' ' . $this->getDescription()));
++                            // Queue the webmentions rather than sending them while the author waits:
++                            // each linked page is fetched in turn, so a post with many links can
++                            // otherwise make a save take minutes. Same pattern as IdnoPlugins/Status.
++                            \Idno\Core\Idno::site()->queue()->enqueue('default', 'webmention/sendall', [
++                                'source' => $this->getURL(),
++                                'text' => \Idno\Core\Idno::site()->template()->parseURLs($this->getTitle() . ' ' . $this->getDescription()),
++                            ]);
+                         }
+ 
+                         return true;
